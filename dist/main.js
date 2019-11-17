@@ -1,13 +1,22 @@
 userList = document.querySelector('#users');
 
-// Fetch info from getusers Lambda Function
+// Fetch info
 const getUsers = async () => {
-  const res = await fetch('https://api.github.com/users');
-  console.log('Fetched data from API');
-  const users = await res.json();
+  let users;
+  //f Check for Cached data inside LocalStorage
+  if (localStorage.getItem('users') !== null) {
+    users = JSON.parse(localStorage.getItem('users'));
+    console.log('Fetched data from Cache');
+  } else {
+    const res = await fetch('https://api.github.com/users');
+    users = await res.json();
+    localStorage.setItem('users', JSON.stringify(users));
+    console.log('Fetched data from API');
+  }
+
   users.slice(0, 10).forEach(user => {
     const li = document.createElement('li');
-    li.className = 'list-group-item bg-dark';
+    li.className = 'list-group-item bg-dark border';
     const link = document.createElement('a');
     link.appendChild(document.createTextNode(user.login));
     link.href = user.html_url;
